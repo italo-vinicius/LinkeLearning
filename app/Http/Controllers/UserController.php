@@ -3,12 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRequest;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use App\Http\Requests\StoreRequest;
+use App\Repositories\StoreRepository;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    private StoreRepository $repository;
+
+    public function __construct(StoreRepository $repository)
+    {
+        $this->repository = $repository;
+    }
 
     public function index()
     {
@@ -22,41 +28,30 @@ class UserController extends Controller
     }
 
 
-    public function store(AuthRequest $request)
-    {
-        $user = new User();
+    public function store(StoreRequest $request)
+    { //Valida o usuário criado e redireciona para a pagina de login
+
         $validators = $request->validated();
-        $validators['password'] = Hash::make($validators['password']);
-        $user->fill($validators);
-//        $user->name = $validators['name'];
-//        $user->email = $validators['email'];
-//        $user->password = Hash::make($validators['password']);
-        $user->save();
-        return redirect()->route('user.index');
 
+        try {
+            $this->repository->createUser($validators);
+            return redirect()->route('user.index');
+        } catch (\Exception $exception) {
+            return $exception->getMessage();
+        }
     }
 
 
-    public function show(string $id)
-    {
-        //TODO
-    }
+    public function getUser(AuthRequest $request)
+    { //Autentica o usuário e redireciona ou não para a Homepage
 
+        $validator = $request->validated();
 
-    public function edit(string $id)
-    {
-        //TODO
-    }
+        if (Auth::attempt($validator)) {
+            return redirect()->route('home');
+        }
 
+        return redirect('usuario')->withErrors(['errors' => 'Credenciais erradas. Tente novamente'])->withInput();
 
-    public function update(Request $request, string $id)
-    {
-        //TODO
-    }
-
-
-    public function destroy(string $id)
-    {
-        //TODO
     }
 }
