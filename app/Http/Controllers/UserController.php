@@ -6,7 +6,6 @@ use App\Http\Requests\AuthRequest;
 use App\Http\Requests\StoreRequest;
 use App\Models\User;
 use App\Repositories\StoreRepository;
-use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -44,19 +43,19 @@ class UserController extends Controller
 
 
     public function getUser(AuthRequest $request)
-    { //Autentica o usuário e redireciona ou não para a Homepage
-
-        $validatedData = $request->validated();
-        $email = $validatedData['email'];
-        $password = $validatedData['password'];
-
-        if (Auth::attempt(['email' => $email, 'password' => $password])) {
-            $user = User::where('email', $email)->first();
-            return redirect()->route('homePage', $user->id);
+    {
+        try {
+            if ($this->repository->authUser($request)) {
+                $user = User::where('email', $request->email)->first();
+                return redirect()->route('homePage', $user->id);
+            } else {
+                return redirect('usuario')->withErrors(['errors' => 'Credenciais erradas. Tente novamente'])->withInput();
+            }
+        } catch (\Exception $exception) {
+            return redirect('usuario')->withErrors(['errors' => 'Erro ao tentar autenticar'])->withInput();
         }
-
-
-        return redirect('usuario')->withErrors(['errors' => 'Credenciais erradas. Tente novamente'])->withInput();
-
     }
+
+
 }
+

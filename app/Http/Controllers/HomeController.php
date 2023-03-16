@@ -5,12 +5,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\User;
+use App\Repositories\PostRepository;
 use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
+    private PostRepository $repository;
+
+    public function __construct(PostRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
     public function index($id)
     {
         return view('home', compact('id'));
@@ -24,18 +32,15 @@ class HomeController extends Controller
 
     public function createPost($id, Request $request)
     {
-        $post = new Post;
-        $post->title = $request->input('title');
-        $post->content = $request->input('content');
-        $post->user_id = Auth::id();
-        $post->save();
-
-        return redirect()->route('homePage', compact('id'));
+        if ($this->repository->newPost($request)) {
+            return redirect()->route('homePage', compact('id'));
+        } else {
+            return redirect('home/' . $id)->withErrors(['errors' => 'Houve algum erro. Tente novamente'])->withInput();
+        }
     }
 
     public function editPost(User $id, Post $post)
     {
-
         return view('editPost', compact('id', 'post'));
     }
 
