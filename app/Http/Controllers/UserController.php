@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AuthRequest;
 use App\Http\Requests\StoreRequest;
+use App\Models\User;
 use App\Repositories\StoreRepository;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,11 +46,15 @@ class UserController extends Controller
     public function getUser(AuthRequest $request)
     { //Autentica o usuário e redireciona ou não para a Homepage
 
-        $validator = $request->validated();
+        $validatedData = $request->validated();
+        $email = $validatedData['email'];
+        $password = $validatedData['password'];
 
-        if (Auth::attempt($validator)) {
-            return redirect()->route('home');
+        if (Auth::attempt(['email' => $email, 'password' => $password])) {
+            $user = User::where('email', $email)->first();
+            return redirect()->route('homePage', $user->id);
         }
+
 
         return redirect('usuario')->withErrors(['errors' => 'Credenciais erradas. Tente novamente'])->withInput();
 
