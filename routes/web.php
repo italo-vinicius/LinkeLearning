@@ -14,4 +14,5 @@ Route::post('home/{id}/createPost', [HomeController::class, 'createPost'])->name
 
 Route::get('home/{id}/timeline', [HomeController::class, 'showTimeline'])->name('timeline');
 Route::get('home/{id}/timeline/{post}', [HomeController::class, 'editPost'])->name('editPost');
-Route::put('home/update/{post}', [HomeController::class, 'updatePost'])->name('updatePost');
+Route::put('home/{post}', [HomeController::class, 'updatePost'])->name('updatePost');
+Route::delete('home/{post}', [HomeController::class, 'deletePost'])->name('deletePost');

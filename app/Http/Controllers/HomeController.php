@@ -44,4 +44,10 @@ class HomeController extends Controller
         $post->update($request->input());
         return redirect()->route('timeline', $post->user_id);
     }
+
+    public function deletePost(Post $post)
+    {
+        $post->delete();
+        return redirect()->route('timeline', $post->user_id );
+    }
 }
