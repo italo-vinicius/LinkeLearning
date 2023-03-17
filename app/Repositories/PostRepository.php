@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Link;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -17,8 +18,17 @@ class PostRepository
             $post->content = $request->input('content');
             $post->user_id = Auth::id();
             $post->save();
+
+            $links = $request->input('link');
+
+            foreach ($links as $link) {
+                $newLink = new Link();
+                $newLink->link = $link;
+                $newLink->post_id = $post->id;
+                $newLink->save();
+            }
             return true;
-        } catch (\Exception $exception){
+        } catch (\Exception $exception) {
             return false;
         }
 
