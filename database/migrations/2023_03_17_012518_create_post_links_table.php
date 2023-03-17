@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('post_links', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('post_id')->references('id')->on('posts');
+            $table->foreignId('post_id')->references('id')->on('posts')->cascadeOnDelete();
             $table->text('link');
             $table->timestamps();
         });

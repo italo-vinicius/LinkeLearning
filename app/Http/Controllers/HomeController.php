@@ -21,19 +21,21 @@ class HomeController extends Controller
 
     public function index($id)
     {
-        return view('home', compact('id'));
+        $person = User::find($id);
+        return view('home', compact('id', 'person'));
     }
 
     public function showTimeline($id, User $user)
     {
         $posts = $user::find($id)->posts;
-        return view('timeline', compact('id', 'posts') );
+        $person = User::find($id);
+        return view('timeline', compact('id', 'posts', 'person'));
     }
 
     public function createPost($id, Request $request)
     {
         if ($this->repository->newPost($request)) {
-            return redirect()->route('homePage', compact('id'));
+            return redirect()->route('homePage', $id);
         } else {
             return redirect('home/' . $id)->withErrors(['errors' => 'Houve algum erro. Tente novamente'])->withInput();
         }
@@ -53,6 +55,6 @@ class HomeController extends Controller
     public function deletePost(Post $post)
     {
         $post->delete();
-        return redirect()->route('timeline', $post->user_id );
+        return redirect()->route('timeline', $post->user_id);
     }
 }

@@ -21,11 +21,13 @@ class PostRepository
 
             $links = $request->input('link');
 
-            foreach ($links as $link) {
-                $newLink = new Link();
-                $newLink->link = $link;
-                $newLink->post_id = $post->id;
-                $newLink->save();
+            if ($links) {
+                foreach ($links as $link) {
+                    $newLink = new Link;
+                    $newLink->link = $link;
+                    $newLink->post_id = $post->id;
+                    $newLink->save();
+                }
             }
             return true;
         } catch (\Exception $exception) {

@@ -4,7 +4,6 @@
 
 @section('content')
     <div class="p-4 w-full max-w-[640px]">
-
         <form action="{{route('createPost', $id)}}" method="post">
             @csrf
             <div>
